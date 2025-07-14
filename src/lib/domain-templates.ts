@@ -141,8 +141,8 @@ const domainGroups: DomainGroup[] = [
 
 export const domainTemplates: DomainTemplate[] = domainGroups.flatMap((group: DomainGroup) =>
   group.patterns.map(pattern => {
-    let headers: Record<string, string> = { ...commonHeaders };
-    
+    let headers: Record<string, string> = { ...commonHeaders, origin: group.origin, referer: group.referer };
+
     if (group.excludeHeaders) {
       group.excludeHeaders.forEach(header => {
         delete headers[header];
@@ -168,5 +168,10 @@ export const domainTemplates: DomainTemplate[] = domainGroups.flatMap((group: Do
 
 export function findDomainTemplate(url: string) {
   const template = domainTemplates.find(template => template.pattern.test(url))
-  return template;
+  return {
+    pattern: template?.pattern,
+    headers: template?.headers,
+    origin: template?.origin,
+    referer: template?.referer,
+  };
 }
